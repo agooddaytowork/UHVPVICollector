@@ -3,18 +3,18 @@
 
 #include <QState>
 #include <QTimer>
-#include "uhv2pvicollectordb.h"
+#include "uhvpvicollectordb.h"
 
 class emitReadV : public QState
 {
 public:
-    emitReadV(UHV2PVICollectorDB * database);
+    emitReadV(UHVPVICollectorDB * database);
 protected:
     void onEntry(QEvent *) override;
     void onExit(QEvent *) override;
 private:
     QTimer timer;
-    UHV2PVICollectorDB * dbPtr = Q_NULLPTR;
+    UHVPVICollectorDB * dbPtr = Q_NULLPTR;
 };
 
 #endif // EMITREADV_H

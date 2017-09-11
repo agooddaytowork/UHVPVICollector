@@ -1,14 +1,14 @@
-#ifndef WAIT4V_H
-#define WAIT4V_H
+#ifndef WAIT4P_H
+#define WAIT4P_H
 
 #include <QState>
 #include <QTimer>
-#include "uhv2pvicollectordb.h"
+#include "uhvpvicollectordb.h"
 
-class wait4V : public QState
+class wait4P : public QState
 {
 public:
-    wait4V(UHV2PVICollectorDB * database);
+    wait4P(UHVPVICollectorDB * database);
 protected:
     void onEntry(QEvent *) override;
     void onExit(QEvent *) override;
@@ -16,4 +16,4 @@ private:
     QTimer timer;
 };
 
-#endif // WAIT4V_H
+#endif // WAIT4P_H

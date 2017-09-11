@@ -1,7 +1,7 @@
 #include "directtransition.h"
 
-directTransition::directTransition(UHV2PVICollectorDB *database, QAbstractState *destinationState) :
-    QSignalTransition(database, &UHV2PVICollectorDB::directTransitionRequest)
+directTransition::directTransition(UHVPVICollectorDB *database, QAbstractState *destinationState) :
+    QSignalTransition(database, &UHVPVICollectorDB::directTransitionRequest)
 {
     this->setTargetState(destinationState);
 }

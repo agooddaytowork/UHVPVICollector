@@ -1,8 +1,8 @@
 #include "emitreadi.h"
 
-emitReadI::emitReadI(UHV2PVICollectorDB *database) : dbPtr(database)
+emitReadI::emitReadI(UHVPVICollectorDB *database) : dbPtr(database)
 {
-    anIf(UHV2PVICollectorStateDbgEn, anTrk("Construct Object"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Construct Object"));
     timer.setParent(this);
     timer.setInterval(database->breakIntervalMSecs);
     timer.setSingleShot(true);
@@ -13,13 +13,13 @@ emitReadI::emitReadI(UHV2PVICollectorDB *database) : dbPtr(database)
 
 void emitReadI::onEntry(QEvent *)
 {
-    anIf(UHV2PVICollectorStateDbgEn, anTrk("Enter State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter State"));
     timer.start();
 }
 
 void emitReadI::onExit(QEvent *)
 {
-    anIf(UHV2PVICollectorStateDbgEn, anTrk("Leave State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave State"));
     timer.stop();
     dbPtr->previousReadState = this->objectName();
 }

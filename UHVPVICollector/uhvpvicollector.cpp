@@ -1,9 +1,10 @@
-#include "uhv2pvicollector.h"
+#include "uhvpvicollector.h"
 
-UHV2PVICollector::UHV2PVICollector(QObject *parent) : QStateMachine(parent)
+UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(parent)
 {
-    anIf(UHV2PVICollectorDbgEn, anTrk("Contruct A State Machine"));
-    currentDb = new UHV2PVICollectorDB(this);
+    anIf(UHVPVICollectorDbgEn, anTrk("Contruct A State Machine"));
+    currentDb = new UHVPVICollectorDB(this);
+    currentDb->isAnUHV2 = isUHV2;
 
     emitReadP * state1 = new emitReadP(currentDb);
     state1->setObjectName("emitReadP");
@@ -20,16 +21,16 @@ UHV2PVICollector::UHV2PVICollector(QObject *parent) : QStateMachine(parent)
     idle * state7 = new idle();
     state7->setObjectName("idle");
 
-    state1->addTransition(currentDb, &UHV2PVICollectorDB::CommandOut, state2);
-    state2->addTransition(currentDb, &UHV2PVICollectorDB::DataObtained, state3);
-    state3->addTransition(currentDb, &UHV2PVICollectorDB::CommandOut, state4);
-    state4->addTransition(currentDb, &UHV2PVICollectorDB::DataObtained, state5);
-    state5->addTransition(currentDb, &UHV2PVICollectorDB::CommandOut, state6);
-    state6->addTransition(currentDb, &UHV2PVICollectorDB::DataObtained, state1);
+    state1->addTransition(currentDb, &UHVPVICollectorDB::CommandOut, state2);
+    state2->addTransition(currentDb, &UHVPVICollectorDB::DataObtained, state3);
+    state3->addTransition(currentDb, &UHVPVICollectorDB::CommandOut, state4);
+    state4->addTransition(currentDb, &UHVPVICollectorDB::DataObtained, state5);
+    state5->addTransition(currentDb, &UHVPVICollectorDB::CommandOut, state6);
+    state6->addTransition(currentDb, &UHVPVICollectorDB::DataObtained, state1);
 
-    state1->addTransition(currentDb, &UHV2PVICollectorDB::pause, state7);
-    state3->addTransition(currentDb, &UHV2PVICollectorDB::pause, state7);
-    state5->addTransition(currentDb, &UHV2PVICollectorDB::pause, state7);
+    state1->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
+    state3->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
+    state5->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
     state7->addTransition(new directTransition(currentDb, state1));
     state7->addTransition(new directTransition(currentDb, state3));
     state7->addTransition(new directTransition(currentDb, state5));
@@ -44,21 +45,21 @@ UHV2PVICollector::UHV2PVICollector(QObject *parent) : QStateMachine(parent)
     this->setInitialState(state1);
     this->setErrorState(state7);
 
-    QObject::connect(this, &UHV2PVICollector::started, currentDb, &UHV2PVICollectorDB::initialize);
+    QObject::connect(this, &UHVPVICollector::started, currentDb, &UHVPVICollectorDB::initialize);
 
 }
 
-void UHV2PVICollector::pause()
+void UHVPVICollector::pause()
 {
     emit currentDb->pause();
 }
 
-void UHV2PVICollector::resume()
+void UHVPVICollector::resume()
 {
     currentDb->resume();
 }
 
-void UHV2PVICollector::DataFromPump(const QByteArray &data)
+void UHVPVICollector::DataFromPump(const QByteArray &data)
 {
     currentDb->processDataFromPump(data);
 }

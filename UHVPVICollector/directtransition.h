@@ -4,12 +4,12 @@
 #include <QSignalTransition>
 #include <QAbstractState>
 #include <QStateMachine>
-#include "uhv2pvicollectordb.h"
+#include "uhvpvicollectordb.h"
 
 class directTransition : public QSignalTransition
 {
 public:
-    directTransition(UHV2PVICollectorDB * database, QAbstractState * destinationState);
+    directTransition(UHVPVICollectorDB * database, QAbstractState * destinationState);
 protected:
     bool eventTest(QEvent *e) override;
 };

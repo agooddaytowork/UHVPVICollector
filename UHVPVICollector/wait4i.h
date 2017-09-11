@@ -3,17 +3,17 @@
 
 #include <QState>
 #include <QTimer>
-#include "uhv2pvicollectordb.h"
+#include "uhvpvicollectordb.h"
 
 class wait4I : public QState
 {
 public:
-    wait4I(UHV2PVICollectorDB * database);
+    wait4I(UHVPVICollectorDB * database);
 protected:
     void onEntry(QEvent *) override;
     void onExit(QEvent *) override;
 private:
     QTimer timer;
-    UHV2PVICollectorDB * dbPtr = Q_NULLPTR;
+    UHVPVICollectorDB * dbPtr = Q_NULLPTR;
 };
 #endif // WAIT4I_H
