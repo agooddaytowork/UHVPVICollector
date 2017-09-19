@@ -2,15 +2,15 @@
 
 idle::idle()
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Construct Object"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("idle Constructed"));
 }
 
 void idle::onEntry(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter idle"));
 }
 
 void idle::onExit(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave idle"));
 }

@@ -1,4 +1,4 @@
-QT += core sql
+QT += core sql network serialport serialbus
 QT -= gui
 
 CONFIG += c++11
@@ -12,7 +12,6 @@ TEMPLATE = app
 SOURCES += main.cpp \
     binaryprotocol.cpp \
     windowprotocol.cpp \
-    UHVPVICollector/directtransition.cpp \
     UHVPVICollector/emitreadi.cpp \
     UHVPVICollector/emitreadp.cpp \
     UHVPVICollector/emitreadv.cpp \
@@ -21,7 +20,11 @@ SOURCES += main.cpp \
     UHVPVICollector/uhvpvicollectordb.cpp \
     UHVPVICollector/wait4i.cpp \
     UHVPVICollector/wait4p.cpp \
-    UHVPVICollector/wait4v.cpp
+    UHVPVICollector/wait4v.cpp \
+    SerialPortWorker/serialportworkerproperty.cpp \
+    piLocalDBWorker/pilocaldbworkervarset.cpp \
+    canprotocol.cpp \
+    UHVPVICollector/directtransitionforuhvpvicollectorstate.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -39,7 +42,6 @@ HEADERS += \
     binaryprotocol.h \
     commonthings.h \
     windowprotocol.h \
-    UHVPVICollector/directtransition.h \
     UHVPVICollector/emitreadi.h \
     UHVPVICollector/emitreadp.h \
     UHVPVICollector/emitreadv.h \
@@ -48,4 +50,8 @@ HEADERS += \
     UHVPVICollector/uhvpvicollectordb.h \
     UHVPVICollector/wait4i.h \
     UHVPVICollector/wait4p.h \
-    UHVPVICollector/wait4v.h
+    UHVPVICollector/wait4v.h \
+    SerialPortWorker/serialportworkerproperty.h \
+    piLocalDBWorker/pilocaldbworkervarset.h \
+    canprotocol.h \
+    UHVPVICollector/directtransitionforuhvpvicollectorstate.h

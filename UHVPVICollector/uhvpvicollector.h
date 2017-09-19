@@ -3,8 +3,6 @@
 
 #define UHVPVICollectorDbgEn 1
 
-#include <QStateMachine>
-#include <QObject>
 #include "uhvpvicollectordb.h"
 #include "emitreadp.h"
 #include "wait4p.h"
@@ -13,18 +11,18 @@
 #include "emitreadi.h"
 #include "wait4i.h"
 #include "idle.h"
-#include "directtransition.h"
+#include "directtransitionforuhvpvicollectorstate.h"
 
 class UHVPVICollector : public QStateMachine
 {
     Q_OBJECT
 public:
     UHVPVICollector(bool isUHV2, QObject *parent = 0);
+
 signals:
+    void Out(const GlobalSignal &);
 public slots:
-    void pause();
-    void resume();
-    void DataFromPump(const QByteArray &data);
+    void In(const GlobalSignal &aGlobalSignal);
 private:
     UHVPVICollectorDB * currentDb = Q_NULLPTR;
 };

@@ -2,7 +2,7 @@
 
 wait4V::wait4V(UHVPVICollectorDB *database)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Construct Object"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("wait4V Constructed"));
     timer.setParent(this);
     timer.setInterval(database->waitIntervalMSecs);
     timer.setSingleShot(true);
@@ -14,12 +14,12 @@ wait4V::wait4V(UHVPVICollectorDB *database)
 
 void wait4V::onEntry(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter wait4V"));
     timer.start();
 }
 
 void wait4V::onExit(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave wait4V"));
     timer.stop();
 }

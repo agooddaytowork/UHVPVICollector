@@ -2,7 +2,7 @@
 
 wait4I::wait4I(UHVPVICollectorDB *database) : dbPtr(database)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Construct Object"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("wait4I Constructed"));
     timer.setInterval(database->waitIntervalMSecs);
     timer.setSingleShot(true);
     QObject::connect(&timer, &QTimer::timeout, this, [database](){
@@ -13,13 +13,13 @@ wait4I::wait4I(UHVPVICollectorDB *database) : dbPtr(database)
 
 void wait4I::onEntry(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter wait4I"));
     timer.start();
 }
 
 void wait4I::onExit(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave wait4I"));
     timer.stop();
     dbPtr->emitMsgToDatabaseUpdatePVI();
 }

@@ -7,21 +7,16 @@ UHVPVICollectorDB::UHVPVICollectorDB(QObject *parent) : QObject(parent)
 
 bool UHVPVICollectorDB::initialize()
 {
-    localDb = QSqlDatabase::addDatabase("QMYSQL");
-    localDb.setHostName("localhost");
-    localDb.setDatabaseName("raspberry");
-    localDb.setUserName("root");
-    localDb.setPassword("Ascenx123");
-    localDb.setPort(3306);
-    if (localDb.open())
+    localDb = QSqlDatabase::database();
+    if (localDb.isOpen())
     {
-        anIf(UHVPVICollectorDBDbgEn, anAck("OK Local Database Connected !"));
+        anIf(UHVPVICollectorDBDbgEn, anAck("OK Local Database Already Connected !"));
         currentGlobalID = 0;
-        currentQuery = QSqlQuery();        
+        currentQuery = QSqlQuery();
     }
     else
     {
-        anIf(UHVPVICollectorDBDbgEn, anError("Failed To Connect Local Database !"));
+        anIf(UHVPVICollectorDBDbgEn, anError("Local Database Not Connected !"));
         emit errorOccurred();
         return false;
     }
@@ -45,21 +40,24 @@ bool UHVPVICollectorDB::gotoNextRecord()
     currentGlobalID = currentQuery.value("GlobalID").toInt();
     currentPNo = currentQuery.value("pumpAddr").toInt();
     currentCH = currentQuery.value("pumpCH").toInt();
+    GS2UHVreadP.Type = QVariant::fromValue(SerialPortWorkerProperty::addAGlobalSignal);
+    GS2UHVreadV = GS2UHVreadP;
+    GS2UHVreadI = GS2UHVreadP;
     if (isAnUHV2)
     {
         BinaryProtocol currentBP;
         currentBP.SetBPNo(currentPNo);
-        QBAReadP = currentBP.ChannelNo(currentCH).ReadP().GenMsg();
-        QBAReadV = currentBP.ChannelNo(currentCH).ReadV().GenMsg();
-        QBAReadI = currentBP.ChannelNo(currentCH).ReadI().GenMsg();
+        GS2UHVreadP.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentBP.ChannelNo(currentCH).ReadP().GenMsg(),QStringLiteral("")));
+        GS2UHVreadV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentBP.ChannelNo(currentCH).ReadV().GenMsg(),QStringLiteral("")));
+        GS2UHVreadI.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentBP.ChannelNo(currentCH).ReadI().GenMsg(),QStringLiteral("")));
     }
     else
     {
         WindowProtocol currentWP;
         currentWP.setWPNo(currentPNo);
-        QBAReadP = currentWP.setChNo(currentCH).PMeasured().Read().clearDATA().genMSG();
-        QBAReadV = currentWP.setChNo(currentCH).VMeasured().Read().clearDATA().genMSG();
-        QBAReadI = currentWP.setChNo(currentCH).IMeasured().Read().clearDATA().genMSG();
+        GS2UHVreadP.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentWP.setChNo(currentCH).PMeasured().Read().clearDATA().genMSG(),QStringLiteral("")));
+        GS2UHVreadV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentWP.setChNo(currentCH).VMeasured().Read().clearDATA().genMSG(),QStringLiteral("")));
+        GS2UHVreadI.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentWP.setChNo(currentCH).IMeasured().Read().clearDATA().genMSG(),QStringLiteral("")));
     }
     anIf(UHVPVICollectorDBDbgEn, anVar(currentGlobalID));
     return true;
@@ -69,7 +67,8 @@ void UHVPVICollectorDB::emitReadP()
 {
     if (gotoNextRecord())
     {
-        emit CommandOut(QBAReadP);
+        emit Out(GS2UHVreadP);
+        emit SignalToUHVEmitted();
     }
     else
     {
@@ -80,12 +79,14 @@ void UHVPVICollectorDB::emitReadP()
 
 void UHVPVICollectorDB::emitReadV()
 {
-    emit CommandOut(QBAReadV);
+    emit Out(GS2UHVreadV);
+    emit SignalToUHVEmitted();
 }
 
 void UHVPVICollectorDB::emitReadI()
 {
-    emit CommandOut(QBAReadI);
+    emit Out(GS2UHVreadI);
+    emit SignalToUHVEmitted();
 }
 
 void UHVPVICollectorDB::emitMsgToDatabaseUpdatePVI()
@@ -95,8 +96,16 @@ void UHVPVICollectorDB::emitMsgToDatabaseUpdatePVI()
             anVar(currentGlobalID);
             anVar(currentPressure);
             anVar(currentVoltage);
-            anVar(currentCurrent));
-    emit MessageToDatabase(currentGlobalID,currentPressure,currentVoltage,currentCurrent);
+            anVar(currentCurrent));    
+    piLocalDBWorkerVarSet::PVIData currentPVIData;
+    currentPVIData.GlobalID = currentGlobalID;
+    currentPVIData.Pressure = currentPressure;
+    currentPVIData.Voltage = currentVoltage;
+    currentPVIData.Current = currentCurrent;
+    GlobalSignal updateLocalDatabaseWithPVIData;
+    updateLocalDatabaseWithPVIData.Type = QVariant::fromValue(piLocalDBWorkerVarSet::updatePVIData);
+    updateLocalDatabaseWithPVIData.Data = QVariant::fromValue(currentPVIData);
+    emit Out(updateLocalDatabaseWithPVIData);
 }
 
 void UHVPVICollectorDB::saveP()
@@ -110,7 +119,7 @@ void UHVPVICollectorDB::saveP()
         currentPressure = getDataString();
     }
     anIf(UHVPVICollectorDBDbgEn, anVar(currentPressure));
-    emit DataObtained();
+    emit DataFromUHVObtained();
 }
 
 void UHVPVICollectorDB::saveV()
@@ -124,7 +133,7 @@ void UHVPVICollectorDB::saveV()
         currentVoltage = getDataString();
     }
     anIf(UHVPVICollectorDBDbgEn, anVar(currentVoltage));
-    emit DataObtained();
+    emit DataFromUHVObtained();
 }
 
 void UHVPVICollectorDB::saveI()
@@ -138,7 +147,7 @@ void UHVPVICollectorDB::saveI()
         currentCurrent = getDataString();
     }
     anIf(UHVPVICollectorDBDbgEn, anVar(currentCurrent));
-    emit DataObtained();
+    emit DataFromUHVObtained();
 }
 
 void UHVPVICollectorDB::setPreviousReadState(const QString &StateObjName)
@@ -175,4 +184,7 @@ QString UHVPVICollectorDB::getDataString()
     }
 }
 
-
+const QMetaEnum UHVPVICollectorDB::DataMetaEnum = QMetaEnum::fromType<UHVPVICollectorDB::Data>();
+const QMetaEnum UHVPVICollectorDB::ErrorMetaEnum = QMetaEnum::fromType<UHVPVICollectorDB::Error>();
+const QMetaEnum UHVPVICollectorDB::WarningMetaEnum = QMetaEnum::fromType<UHVPVICollectorDB::Warning>();
+const QMetaEnum UHVPVICollectorDB::NotificationMetaEnum = QMetaEnum::fromType<UHVPVICollectorDB::Notification>();

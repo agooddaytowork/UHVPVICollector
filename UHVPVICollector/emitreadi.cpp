@@ -2,7 +2,7 @@
 
 emitReadI::emitReadI(UHVPVICollectorDB *database) : dbPtr(database)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Construct Object"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("emitReadI Constructed"));
     timer.setParent(this);
     timer.setInterval(database->breakIntervalMSecs);
     timer.setSingleShot(true);
@@ -13,13 +13,13 @@ emitReadI::emitReadI(UHVPVICollectorDB *database) : dbPtr(database)
 
 void emitReadI::onEntry(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Enter emitReadI"));
     timer.start();
 }
 
 void emitReadI::onExit(QEvent *)
 {
-    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave State"));
+    anIf(UHVPVICollectorStateDbgEn, anTrk("Leave emitReadI"));
     timer.stop();
     dbPtr->previousReadState = this->objectName();
 }

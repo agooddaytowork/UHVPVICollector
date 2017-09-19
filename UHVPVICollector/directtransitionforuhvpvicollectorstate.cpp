@@ -1,12 +1,12 @@
-#include "directtransition.h"
+#include "directtransitionforuhvpvicollectorstate.h"
 
-directTransition::directTransition(UHVPVICollectorDB *database, QAbstractState *destinationState) :
+directTransitionForUHVPVICollectorState::directTransitionForUHVPVICollectorState(UHVPVICollectorDB *database, QAbstractState *destinationState) :
     QSignalTransition(database, &UHVPVICollectorDB::directTransitionRequest)
 {
     this->setTargetState(destinationState);
 }
 
-bool directTransition::eventTest(QEvent *e)
+bool directTransitionForUHVPVICollectorState::eventTest(QEvent *e)
 {
     if (!(QSignalTransition::eventTest(e) && this->targetState()))
         return false;

@@ -1,8 +1,7 @@
 #include "uhvpvicollector.h"
 
 UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(parent)
-{
-    anIf(UHVPVICollectorDbgEn, anTrk("Contruct A State Machine"));
+{    
     currentDb = new UHVPVICollectorDB(this);
     currentDb->isAnUHV2 = isUHV2;
 
@@ -21,19 +20,19 @@ UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(p
     idle * state7 = new idle();
     state7->setObjectName("idle");
 
-    state1->addTransition(currentDb, &UHVPVICollectorDB::CommandOut, state2);
-    state2->addTransition(currentDb, &UHVPVICollectorDB::DataObtained, state3);
-    state3->addTransition(currentDb, &UHVPVICollectorDB::CommandOut, state4);
-    state4->addTransition(currentDb, &UHVPVICollectorDB::DataObtained, state5);
-    state5->addTransition(currentDb, &UHVPVICollectorDB::CommandOut, state6);
-    state6->addTransition(currentDb, &UHVPVICollectorDB::DataObtained, state1);
+    state1->addTransition(currentDb, &UHVPVICollectorDB::SignalToUHVEmitted, state2);
+    state2->addTransition(currentDb, &UHVPVICollectorDB::DataFromUHVObtained, state3);
+    state3->addTransition(currentDb, &UHVPVICollectorDB::SignalToUHVEmitted, state4);
+    state4->addTransition(currentDb, &UHVPVICollectorDB::DataFromUHVObtained, state5);
+    state5->addTransition(currentDb, &UHVPVICollectorDB::SignalToUHVEmitted, state6);
+    state6->addTransition(currentDb, &UHVPVICollectorDB::DataFromUHVObtained, state1);
 
     state1->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
     state3->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
     state5->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
-    state7->addTransition(new directTransition(currentDb, state1));
-    state7->addTransition(new directTransition(currentDb, state3));
-    state7->addTransition(new directTransition(currentDb, state5));
+    state7->addTransition(new directTransitionForUHVPVICollectorState(currentDb, state1));
+    state7->addTransition(new directTransitionForUHVPVICollectorState(currentDb, state3));
+    state7->addTransition(new directTransitionForUHVPVICollectorState(currentDb, state5));
 
     this->addState(state1);
     this->addState(state2);
@@ -46,20 +45,44 @@ UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(p
     this->setErrorState(state7);
 
     QObject::connect(this, &UHVPVICollector::started, currentDb, &UHVPVICollectorDB::initialize);
+    anIf(UHVPVICollectorDbgEn, anTrk("UHVPVICollector Constructed"));
 
 }
 
-void UHVPVICollector::pause()
+void UHVPVICollector::In(const GlobalSignal &aGlobalSignal)
 {
-    emit currentDb->pause();
-}
-
-void UHVPVICollector::resume()
-{
-    currentDb->resume();
-}
-
-void UHVPVICollector::DataFromPump(const QByteArray &data)
-{
-    currentDb->processDataFromPump(data);
+    anIf(UHVPVICollectorDBDbgEn, anTrk("UHVPVICollector Receives A Signal"));
+    QString enumVarTypeName(aGlobalSignal.Type.typeName());
+    if (enumVarTypeName == "UHVPVICollectorDB::Data")
+    {
+        switch (aGlobalSignal.Type.toInt()) {
+        case UHVPVICollectorDB::pauseMachine:
+        {
+            anIf(UHVPVICollectorDbgEn, anTrk("pauseMachine"));
+            emit currentDb->pause();
+            break;
+        }
+        case UHVPVICollectorDB::resumeMachine:
+        {
+            anIf(UHVPVICollectorDbgEn, anTrk("resumeMachine"));
+            currentDb->resume();
+            break;
+        }
+        default:
+            break;
+        }
+    }
+    else if (enumVarTypeName == "SerialPortWorkerProperty::Data")
+    {
+        switch (aGlobalSignal.Type.toInt()) {
+        case SerialPortWorkerProperty::replyAGlobalSignal:
+        {
+            anIf(UHVPVICollectorDbgEn, anTrk("SerialPortWorkerProperty::replyAGlobalSignal"));
+            currentDb->processDataFromPump(aGlobalSignal.Data.value<SerialPortWorkerProperty::DataMessage>().first);
+            break;
+        }
+        default:
+            break;
+        }
+    }
 }

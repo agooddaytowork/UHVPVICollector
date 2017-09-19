@@ -3,6 +3,7 @@
 
 #include <QHash>
 #include <QByteArray>
+#include <QVariant>
 
 inline QByteArray &operator <<(QByteArray &QBArr, const quint8 Data)
 {
@@ -74,5 +75,20 @@ inline static const QByteArray IntStr2QBArr0Pad(const quint32 Num, const quint8 
     return QStrTmp.prepend(QString("").fill('0',SizeInByte-QStrTmp.size())).toLocal8Bit();
 }
 
+///
+///\brief GlobalSignal
+///
+typedef struct
+{
+    QVariant Type;
+    QVariant Data;
+    QString Key = "NULL";
+    QList<QString> DstStrs;
+    qint16 Priority = 0;
+    qint16 SignalPriority = 0;
+} GlobalSignal;
+Q_DECLARE_METATYPE(GlobalSignal)
+
+#define registerGlobalSignal qRegisterMetaType<GlobalSignal>("GlobalSignal");
 
 #endif // COMMONTHINGS_H

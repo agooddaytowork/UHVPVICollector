@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[])
 {
+    registerGlobalSignal
     QCoreApplication a(argc, argv);
     UHVPVICollector testUHV2(true);
     testUHV2.start();
