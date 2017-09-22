@@ -15,7 +15,6 @@ SOURCES += main.cpp \
     UHVPVICollector/emitreadi.cpp \
     UHVPVICollector/emitreadp.cpp \
     UHVPVICollector/emitreadv.cpp \
-    UHVPVICollector/idle.cpp \
     UHVPVICollector/uhvpvicollector.cpp \
     UHVPVICollector/uhvpvicollectordb.cpp \
     UHVPVICollector/wait4i.cpp \
@@ -24,7 +23,8 @@ SOURCES += main.cpp \
     canprotocol.cpp \
     UHVPVICollector/directtransitionforuhvpvicollectorstate.cpp \
     SerialPortWorker/SerialPortWorker/serialportworkerproperty.cpp \
-    piLocalDBWorker/piLocalDBWorker/pilocaldbworkervarset.cpp
+    piLocalDBWorker/piLocalDBWorker/pilocaldbworkervarset.cpp \
+    UHVPVICollector/idleuhvpvicollector.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -45,7 +45,6 @@ HEADERS += \
     UHVPVICollector/emitreadi.h \
     UHVPVICollector/emitreadp.h \
     UHVPVICollector/emitreadv.h \
-    UHVPVICollector/idle.h \
     UHVPVICollector/uhvpvicollector.h \
     UHVPVICollector/uhvpvicollectordb.h \
     UHVPVICollector/wait4i.h \
@@ -54,4 +53,5 @@ HEADERS += \
     canprotocol.h \
     UHVPVICollector/directtransitionforuhvpvicollectorstate.h \
     SerialPortWorker/SerialPortWorker/serialportworkerproperty.h \
-    piLocalDBWorker/piLocalDBWorker/pilocaldbworkervarset.h
+    piLocalDBWorker/piLocalDBWorker/pilocaldbworkervarset.h \
+    UHVPVICollector/idleuhvpvicollector.h

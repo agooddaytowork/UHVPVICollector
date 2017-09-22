@@ -10,7 +10,7 @@
 #include "wait4v.h"
 #include "emitreadi.h"
 #include "wait4i.h"
-#include "idle.h"
+#include "idleuhvpvicollector.h"
 #include "directtransitionforuhvpvicollectorstate.h"
 
 class UHVPVICollector : public QStateMachine

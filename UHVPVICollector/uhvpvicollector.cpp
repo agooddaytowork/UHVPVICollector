@@ -17,8 +17,8 @@ UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(p
     state5->setObjectName("emitReadI");
     wait4I * state6 = new wait4I(currentDb);
     state6->setObjectName("wait4I");
-    idle * state7 = new idle();
-    state7->setObjectName("idle");
+    idleUHVPVICollector * state7 = new idleUHVPVICollector();
+    state7->setObjectName("idleUHVPVICollector");
 
     state1->addTransition(currentDb, &UHVPVICollectorDB::SignalToUHVEmitted, state2);
     state2->addTransition(currentDb, &UHVPVICollectorDB::DataFromUHVObtained, state3);
