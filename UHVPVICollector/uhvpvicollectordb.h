@@ -13,8 +13,8 @@
 #include "commonthings.h"
 #include "binaryprotocol.h"
 #include "windowprotocol.h"
-#include "SerialPortWorker/serialportworkerproperty.h"
-#include "piLocalDBWorker/pilocaldbworkervarset.h"
+#include "SerialPortWorker/SerialPortWorker/serialportworkerproperty.h"
+#include "piLocalDBWorker/piLocalDBWorker/pilocaldbworkervarset.h"
 
 class UHVPVICollectorDB : public QObject
 {
