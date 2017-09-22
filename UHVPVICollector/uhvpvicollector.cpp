@@ -41,7 +41,7 @@ UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(p
     this->addState(state5);
     this->addState(state6);
     this->addState(state7);
-    this->setInitialState(state1);
+    this->setInitialState(state7);
     this->setErrorState(state7);
 
     QObject::connect(this, &UHVPVICollector::started, currentDb, &UHVPVICollectorDB::initialize);

@@ -13,6 +13,12 @@ bool UHVPVICollectorDB::initialize()
         anIf(UHVPVICollectorDBDbgEn, anAck("OK Local Database Already Connected !"));
         currentGlobalID = 0;
         currentQuery = QSqlQuery();
+        previousReadState = "emitReadP";
+        GlobalSignal iamReady;
+        iamReady.Type = QVariant::fromValue(UHVPVICollectorDB::readyToWork);
+        iamReady.Data = QVariant::fromValue(this->parent()->objectName());
+        iamReady.SignalPriority = 100;
+        emit Out(iamReady);
     }
     else
     {
