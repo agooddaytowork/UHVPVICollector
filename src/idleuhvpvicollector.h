@@ -7,10 +7,12 @@
 class idleUHVPVICollector : public QState
 {
 public:
-    idleUHVPVICollector();
+    idleUHVPVICollector(UHVPVICollectorDB *database);
 protected:
     void onEntry(QEvent *) override;
     void onExit(QEvent *) override;
+private:
+    UHVPVICollectorDB *dbPtr = Q_NULLPTR;
 };
 
 #endif // IDLEUHVPVICOLLECTOR_H

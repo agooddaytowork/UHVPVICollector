@@ -4,6 +4,8 @@
 #include <QHash>
 #include <QByteArray>
 #include <QVariant>
+#include <QSqlDatabase>
+#include "anLogger/src/anlogger.h"
 
 inline QByteArray &operator <<(QByteArray &QBArr, const quint8 Data)
 {
@@ -33,9 +35,9 @@ inline QByteArray &operator <<(QByteArray &QBArr, const QByteArray &Data)
 }
 
 template <typename TN>
-const QHash<TN, QString> SwapKeyValOnOneToOneQHash(const QHash<QString, TN> &AQHashKeyValSet)
+inline QHash<TN, QString> SwapKeyValOnOneToOneQHash(const QHash<QString, TN> &AQHashKeyValSet)
 {
-    QHash<TN, QString> &tmp = * new QHash<TN, QString>();
+    QHash<TN, QString> tmp;
     QString tmp2 = "";
     auto KeyItr = AQHashKeyValSet.keyBegin();
     for (; KeyItr!=AQHashKeyValSet.keyEnd(); KeyItr++)
@@ -46,7 +48,7 @@ const QHash<TN, QString> SwapKeyValOnOneToOneQHash(const QHash<QString, TN> &AQH
     return tmp;
 }
 
-inline static quint8 XORofAllBytesInQByteArr(const QByteArray &QBArr)
+inline quint8 XORofAllBytesInQByteArr(const QByteArray &QBArr)
 {
     if (!(QBArr.isNull() || QBArr.isEmpty()))
     {
@@ -69,7 +71,7 @@ inline static quint8 XORofAllBytesInQByteArr(const QByteArray &QBArr)
 /// \return QByteArray contains a hex number
 ///         representing an integer number encoded by Ascii code
 ///
-inline static const QByteArray IntStr2QBArr0Pad(const quint32 Num, const quint8 SizeInByte)
+inline QByteArray IntStr2QBArr0Pad(const quint32 Num, const quint8 SizeInByte)
 {
     QString QStrTmp = QString::number(Num);
     return QStrTmp.prepend(QString("").fill('0',SizeInByte-QStrTmp.size())).toLocal8Bit();
@@ -82,7 +84,7 @@ typedef struct
 {
     QVariant Type;
     QVariant Data;
-    QString Key = "NULL";
+    QString Key = QStringLiteral("NULL");
     QList<QString> DstStrs;
     qint16 Priority = 0;
     qint16 SignalPriority = 0;
@@ -91,11 +93,25 @@ Q_DECLARE_METATYPE(GlobalSignal)
 
 #define registerGlobalSignal qRegisterMetaType<GlobalSignal>("GlobalSignal");
 
-static const QString piLocalDBWorkerObjName = QStringLiteral("piLocalDBWorker");
-static const QString UHV2WorkerObjName = QStringLiteral("UHV2Worker");
-static const QString UHV4WorkerObjName = QStringLiteral("UHV4Worker");
-static const QString UHV2PVICollectorObjName = QStringLiteral("UHV2PVICollector");
-static const QString UHV4PVICollectorObjName = QStringLiteral("UHV4PVICollector");
-static const QString SmallCoordinatorObjName = QStringLiteral("SmallCoordinator");
+extern const QString piLocalDBWorkerObjName;
+extern const QString UHV2WorkerObjName;
+extern const QString UHV4WorkerObjName;
+extern const QString UHV2PVICollectorObjName;
+extern const QString UHV4PVICollectorObjName;
+extern const QString SmallCoordinatorObjName;
+extern QSqlDatabase localQSqlDatabase;
+
+#define connectLocalQSqlDatabase {\
+        localQSqlDatabase.setHostName(QStringLiteral("localhost"));\
+        localQSqlDatabase.setDatabaseName(QStringLiteral("raspberry"));\
+        localQSqlDatabase.setUserName(QStringLiteral("root"));\
+        localQSqlDatabase.setPassword(QStringLiteral("Ascenx123"));\
+        localQSqlDatabase.setPort(3306);\
+        if (localQSqlDatabase.open()) {\
+            anAck("Local Database Connected !");\
+        } else {\
+            anError("Failed To Connect Local Database !");\
+            exit(EXIT_FAILURE);\
+        }}
 
 #endif // COMMONTHINGS_H

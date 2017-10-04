@@ -24,19 +24,20 @@ void piLocalDBWorkerVarSet::dispose()
 bool piLocalDBWorkerVarSet::connectLocalDatabase()
 {
     closeLocalDatabaseConnection();
-    localDb = QSqlDatabase::addDatabase("QMYSQL");
-    localDb.setHostName("localhost");
-    localDb.setDatabaseName("raspberry");
-    localDb.setUserName("root");
-    localDb.setPassword("Ascenx123");
-    localDb.setPort(3306);
+    localDb = QSqlDatabase::cloneDatabase(localQSqlDatabase, this->parent()->objectName());
     if (localDb.open())
     {
         anIf(piLocalDBWorkerVarSetDbgEn, anAck("OK Local Database Connected !"));
-        sourceQuery = QSqlQuery();
-        tmpQuery = QSqlQuery();
-        tmpQuery2 = QSqlQuery();
-        instantQuery = QSqlQuery();
+        sourceQuery = QSqlQuery(localDb);
+        tmpQuery = QSqlQuery(localDb);
+        tmpQuery2 = QSqlQuery(localDb);
+        instantQuery = QSqlQuery(localDb);
+        GlobalSignal iamReady;
+        iamReady.Type = QVariant::fromValue(piLocalDBWorkerVarSet::readyToWork);
+        iamReady.Data = QVariant::fromValue(this->parent()->objectName());
+        iamReady.DstStrs.append(SmallCoordinatorObjName);
+        iamReady.SignalPriority = 100;
+        emit Out(iamReady);
         emit DatabaseConnected();
         return true;
     }
@@ -102,8 +103,8 @@ void piLocalDBWorkerVarSet::addOneGlobalSignal(const GlobalSignal &aGlobalSignal
 void piLocalDBWorkerVarSet::requestControlTableCheck()
 {
     instantQuery.exec("SELECT COUNT(*) AS TotalControlRequests FROM control");
-    instantQuery.next();
-    for (int i = 0; i<=(instantQuery.value("TotalControlRequests").toInt()); ++i)
+    instantQuery.first();
+    for (int i = instantQuery.value("TotalControlRequests").toInt(); i>0; --i)
     {
         addOneGlobalSignal(constGlobalSignalCheckControlTable);
     }
@@ -262,8 +263,8 @@ const QJsonObject piLocalDBWorkerVarSet::createAJsonDataPackage(const QString &G
 
 const QJsonArray piLocalDBWorkerVarSet::getPendingJsonDataPackage()
 {
-    QSqlQuery tmpScopedSourceQuerry;
-    QSqlQuery tmpScopedQuerry;
+    QSqlQuery tmpScopedSourceQuerry(localDb);
+    QSqlQuery tmpScopedQuerry(localDb);
     QJsonArray tmpReturn;
     QString tmpScopedString;
     tmpScopedSourceQuerry.exec("SELECT RFID, setRoughValveOn, setHVOn, GlobalID FROM stations");

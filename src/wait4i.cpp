@@ -3,6 +3,7 @@
 wait4I::wait4I(UHVPVICollectorDB *database) : dbPtr(database)
 {
     anIf(UHVPVICollectorStateDbgEn, anTrk("wait4I Constructed"));
+    timer.setParent(this);
     timer.setInterval(database->waitIntervalMSecs);
     timer.setSingleShot(true);
     QObject::connect(&timer, &QTimer::timeout, this, [database](){

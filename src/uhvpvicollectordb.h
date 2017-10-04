@@ -6,21 +6,21 @@
 
 #include <QObject>
 #include <QStateMachine>
-#include "anlogger.h"
+#include "anLogger/src/anlogger.h"
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QByteArray>
-#include "commonthings.h"
-#include "binaryprotocol.h"
-#include "windowprotocol.h"
-#include "SerialPortWorker/SerialPortWorker/serialportworkerproperty.h"
-#include "piLocalDBWorker/piLocalDBWorker/pilocaldbworkervarset.h"
+#include "shared/commonthings.h"
+#include "BinaryProtocol/src/binaryprotocol.h"
+#include "WindowProtocol/src/windowprotocol.h"
+#include "SerialPortWorker/src/serialportworkerproperty.h"
+#include "piLocalDBWorker/src/pilocaldbworkervarset.h"
 
 class UHVPVICollectorDB : public QObject
 {
     Q_OBJECT
 public:
-    explicit UHVPVICollectorDB(QObject *parent = nullptr);
+    explicit UHVPVICollectorDB(bool isUHV2, QObject *parent = nullptr);
 
     enum Data {
         NoData = 0,
@@ -67,22 +67,23 @@ public:
     quint8 currentPNo;
     quint8 currentCH;
     bool isAnUHV2;
+    bool isReady = false;
     QByteArray QBAReadP;
     QByteArray QBAReadV;
     QByteArray QBAReadI;
-    GlobalSignal GS2UHVreadP;
-    GlobalSignal GS2UHVreadV;
-    GlobalSignal GS2UHVreadI;
+    GlobalSignal GS2UHV;
 signals:
     void Out(const GlobalSignal &);
     void errorOccurred();
+    void DatabaseClosed();
     void pause();
     void directTransitionRequest(const QString &);
     void SignalToUHVEmitted();
     void DataFromUHVObtained();
     void MessageToDatabase(quint32 GlobalID, const QString &Pressure, const QString &Voltage, const QString &Current);
 public slots:
-    bool initialize();
+    void initialize();
+    bool connectDatabase();
     bool gotoNextRecord();
     void emitReadP();
     void emitReadV();
@@ -95,7 +96,10 @@ public slots:
     void resume();
     void processDataFromPump(const QByteArray &data);
 private:
+    BinaryProtocol currentBP;
+    WindowProtocol currentWP;
     QString getDataString();
+    void closeDatabaseConnection();
 };
 
 #endif // UHVPVICOLLECTORDB_H

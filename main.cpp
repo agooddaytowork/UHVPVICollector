@@ -1,9 +1,10 @@
 #include <QCoreApplication>
-#include "UHVPVICollector/uhvpvicollector.h"
+#include "src/uhvpvicollector.h"
 
 int main(int argc, char *argv[])
 {
-    registerGlobalSignal
+    registerGlobalSignal;
+    connectLocalQSqlDatabase;
     QCoreApplication a(argc, argv);
     UHVPVICollector testUHV2(true);
     testUHV2.start();
