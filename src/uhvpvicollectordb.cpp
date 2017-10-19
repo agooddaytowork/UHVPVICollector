@@ -6,10 +6,16 @@ UHVPVICollectorDB::UHVPVICollectorDB(bool isUHV2, QObject *parent) : QObject(par
     initialize();
 }
 
+UHVPVICollectorDB::~UHVPVICollectorDB()
+{
+    emit pause();
+    closeDatabaseConnection();
+}
+
 void UHVPVICollectorDB::initialize()
 {
     previousReadState = "emitReadP";
-    GS2UHV.Type = QVariant::fromValue(SerialPortWorkerProperty::addAGlobalSignal);
+    GS2UHV.Type = QVariant::fromValue(SerialPortWorkerBasis::requestBytesTransmission);
     if (isAnUHV2)
     {
         GS2UHV.DstStrs.append(UHV2WorkerObjName);
@@ -77,11 +83,11 @@ void UHVPVICollectorDB::emitReadP()
     {
         if (isAnUHV2)
         {
-            GS2UHV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentBP.ReadP().GenMsg(),QStringLiteral("")));
+            GS2UHV.Data = QVariant::fromValue(currentBP.ReadP().GenMsg());
         }
         else
         {
-            GS2UHV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentWP.PMeasured().Read().clearDATA().genMSG(),QStringLiteral("")));
+            GS2UHV.Data = QVariant::fromValue(currentWP.PMeasured().Read().clearDATA().genMSG());
         }
         emit Out(GS2UHV);
         emit SignalToUHVEmitted();
@@ -97,11 +103,11 @@ void UHVPVICollectorDB::emitReadV()
 {
     if (isAnUHV2)
     {
-        GS2UHV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentBP.ReadV().GenMsg(),QStringLiteral("")));
+        GS2UHV.Data = QVariant::fromValue(currentBP.ReadV().GenMsg());
     }
     else
     {
-        GS2UHV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentWP.VMeasured().Read().clearDATA().genMSG(),QStringLiteral("")));
+        GS2UHV.Data = QVariant::fromValue(currentWP.VMeasured().Read().clearDATA().genMSG());
     }
     emit Out(GS2UHV);
     emit SignalToUHVEmitted();
@@ -111,11 +117,11 @@ void UHVPVICollectorDB::emitReadI()
 {
     if (isAnUHV2)
     {
-        GS2UHV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentBP.ReadI().GenMsg(),QStringLiteral("")));
+        GS2UHV.Data = QVariant::fromValue(currentBP.ReadI().GenMsg());
     }
     else
     {
-        GS2UHV.Data = QVariant::fromValue(SerialPortWorkerProperty::DataMessage(currentWP.IMeasured().Read().clearDATA().genMSG(),QStringLiteral("")));
+        GS2UHV.Data = QVariant::fromValue(currentWP.IMeasured().Read().clearDATA().genMSG());
     }
     emit Out(GS2UHV);
     emit SignalToUHVEmitted();
@@ -129,13 +135,13 @@ void UHVPVICollectorDB::emitMsgToDatabaseUpdatePVI()
             anVar(currentPressure);
             anVar(currentVoltage);
             anVar(currentCurrent));    
-    piLocalDBWorkerVarSet::PVIData currentPVIData;
+    piLocalDBWorkerBasis::PVIData currentPVIData;
     currentPVIData.GlobalID = currentGlobalID;
     currentPVIData.Pressure = currentPressure;
     currentPVIData.Voltage = currentVoltage;
     currentPVIData.Current = currentCurrent;
     GlobalSignal updateLocalDatabaseWithPVIData;
-    updateLocalDatabaseWithPVIData.Type = QVariant::fromValue(piLocalDBWorkerVarSet::updatePVIData);
+    updateLocalDatabaseWithPVIData.Type = QVariant::fromValue(piLocalDBWorkerBasis::updatePVIData);
     updateLocalDatabaseWithPVIData.Data = QVariant::fromValue(currentPVIData);
     updateLocalDatabaseWithPVIData.DstStrs.append(piLocalDBWorkerObjName);
     emit Out(updateLocalDatabaseWithPVIData);

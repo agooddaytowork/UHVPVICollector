@@ -30,9 +30,9 @@ UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(p
     state1->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
     state3->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
     state5->addTransition(currentDb, &UHVPVICollectorDB::pause, state7);
-    state7->addTransition(new directTransitionForUHVPVICollectorState(currentDb, state1));
-    state7->addTransition(new directTransitionForUHVPVICollectorState(currentDb, state3));
-    state7->addTransition(new directTransitionForUHVPVICollectorState(currentDb, state5));
+    state7->addTransition(new directTransition(currentDb, SIGNAL(directTransitionRequest(QString)), state1));
+    state7->addTransition(new directTransition(currentDb, SIGNAL(directTransitionRequest(QString)), state3));
+    state7->addTransition(new directTransition(currentDb, SIGNAL(directTransitionRequest(QString)), state5));
 
     this->addState(state1);
     this->addState(state2);
@@ -46,6 +46,15 @@ UHVPVICollector::UHVPVICollector(bool isUHV2, QObject *parent) : QStateMachine(p
 
     anIf(UHVPVICollectorDbgEn, anTrk("UHVPVICollector Constructed"));
 
+}
+
+UHVPVICollector::~UHVPVICollector()
+{
+    if (currentDb)
+    {
+        delete currentDb;
+        currentDb = nullptr;
+    }
 }
 
 void UHVPVICollector::In(const GlobalSignal &aGlobalSignal)
@@ -71,13 +80,13 @@ void UHVPVICollector::In(const GlobalSignal &aGlobalSignal)
             break;
         }
     }
-    else if (enumVarTypeName == "SerialPortWorkerProperty::Data")
+    else if (enumVarTypeName == "SerialPortWorkerBasis::Data")
     {
         switch (aGlobalSignal.Type.toInt()) {
-        case SerialPortWorkerProperty::replyAGlobalSignal:
+        case SerialPortWorkerBasis::replyBytesWithTimeStamp:
         {
-            anIf(UHVPVICollectorDbgEn, anTrk("SerialPortWorkerProperty::replyAGlobalSignal"));
-            currentDb->processDataFromPump(aGlobalSignal.Data.value<SerialPortWorkerProperty::DataMessage>().first);
+            anIf(UHVPVICollectorDbgEn, anTrk("SerialPortWorkerBasis::replyAGlobalSignal"));
+            currentDb->processDataFromPump(aGlobalSignal.Data.toByteArray());
             break;
         }
         default:

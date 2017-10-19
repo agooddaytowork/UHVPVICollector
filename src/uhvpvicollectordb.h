@@ -13,14 +13,15 @@
 #include "shared/commonthings.h"
 #include "BinaryProtocol/src/binaryprotocol.h"
 #include "WindowProtocol/src/windowprotocol.h"
-#include "SerialPortWorker/src/serialportworkerproperty.h"
-#include "piLocalDBWorker/src/pilocaldbworkervarset.h"
+#include "SerialPortWorker/src/serialportworkerbasis.h"
+#include "piLocalDBWorker/src/pilocaldbworkerbasis.h"
 
 class UHVPVICollectorDB : public QObject
 {
     Q_OBJECT
 public:
     explicit UHVPVICollectorDB(bool isUHV2, QObject *parent = nullptr);
+    ~UHVPVICollectorDB();
 
     enum Data {
         NoData = 0,
@@ -52,7 +53,6 @@ public:
     static const QMetaEnum ErrorMetaEnum;
     static const QMetaEnum WarningMetaEnum;
     static const QMetaEnum NotificationMetaEnum;
-    static const Qt::ConnectionType uniqueQtConnectionType = static_cast<Qt::ConnectionType>(Qt::AutoConnection | Qt::UniqueConnection);
 
     quint32 currentGlobalID;
     quint32 breakIntervalMSecs = 1000;

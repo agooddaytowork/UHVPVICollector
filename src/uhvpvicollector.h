@@ -11,14 +11,14 @@
 #include "emitreadi.h"
 #include "wait4i.h"
 #include "idleuhvpvicollector.h"
-#include "directtransitionforuhvpvicollectorstate.h"
+#include "shared/directtransition.h"
 
 class UHVPVICollector : public QStateMachine
 {
     Q_OBJECT
 public:
     UHVPVICollector(bool isUHV2, QObject *parent = 0);
-
+    ~UHVPVICollector();
 signals:
     void Out(const GlobalSignal &);
 public slots:

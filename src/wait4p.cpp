@@ -3,6 +3,7 @@
 wait4P::wait4P(UHVPVICollectorDB *database)
 {
     anIf(UHVPVICollectorStateDbgEn, anTrk("wait4P Constructed"));
+
     timer.setParent(this);
     timer.setInterval(database->waitIntervalMSecs);
     timer.setSingleShot(true);

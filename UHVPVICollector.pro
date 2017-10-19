@@ -1,4 +1,4 @@
-QT += core sql network serialport serialbus
+QT += core sql network serialport
 QT -= gui
 
 CONFIG += c++11
@@ -11,11 +11,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     anLogger/src/anlogger.cpp \
-    BinaryProtocol/src/binaryprotocol.cpp \
-    CanProtocol/src/canprotocol.cpp \
-    WindowProtocol/src/windowprotocol.cpp \
+    shared/abstractstatemachinebasis.cpp \
     shared/commonthings.cpp \
-    src/directtransitionforuhvpvicollectorstate.cpp \
+    shared/directtransition.cpp \
+    BinaryProtocol/src/binaryprotocol.cpp \
+    WindowProtocol/src/windowprotocol.cpp \
+    SerialPortWorker/src/serialportworkerbasis.cpp \
+    piLocalDBWorker/src/pilocaldbworkerbasis.cpp \
     src/emitreadi.cpp \
     src/emitreadp.cpp \
     src/emitreadv.cpp \
@@ -24,9 +26,7 @@ SOURCES += main.cpp \
     src/uhvpvicollectordb.cpp \
     src/wait4i.cpp \
     src/wait4p.cpp \
-    src/wait4v.cpp \
-    piLocalDBWorker/src/pilocaldbworkervarset.cpp \
-    SerialPortWorker/src/serialportworkerproperty.cpp
+    src/wait4v.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -41,11 +41,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     anLogger/src/anlogger.h \
-    BinaryProtocol/src/binaryprotocol.h \
-    CanProtocol/src/canprotocol.h \
-    WindowProtocol/src/windowprotocol.h \
+    shared/abstractstatemachinebasis.h \
     shared/commonthings.h \
-    src/directtransitionforuhvpvicollectorstate.h \
+    shared/directtransition.h \
+    BinaryProtocol/src/binaryprotocol.h \
+    WindowProtocol/src/windowprotocol.h \
+    SerialPortWorker/src/serialportworkerbasis.h \
+    piLocalDBWorker/src/pilocaldbworkerbasis.h \
     src/emitreadi.h \
     src/emitreadp.h \
     src/emitreadv.h \
@@ -54,6 +56,4 @@ HEADERS += \
     src/uhvpvicollectordb.h \
     src/wait4i.h \
     src/wait4p.h \
-    src/wait4v.h \
-    piLocalDBWorker/src/pilocaldbworkervarset.h \
-    SerialPortWorker/src/serialportworkerproperty.h
+    src/wait4v.h

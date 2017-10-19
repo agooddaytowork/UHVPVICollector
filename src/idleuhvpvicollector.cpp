@@ -15,6 +15,7 @@ void idleUHVPVICollector::onEntry(QEvent *)
             GlobalSignal iamReady;
             iamReady.Type = QVariant::fromValue(UHVPVICollectorDB::readyToWork);
             iamReady.Data = QVariant::fromValue(this->machine()->objectName());
+            iamReady.DstStrs.append(SmallCoordinatorObjName);
             emit dbPtr->Out(iamReady);
         }
     }
